@@ -5,6 +5,7 @@ from Card import *
 from Player import *
 from configuration import *
 import random
+import copy
 
 
 class Dorijitgo:
@@ -15,6 +16,7 @@ class Dorijitgo:
         self.window.configure(bg="green")
         self.fontstyle = font.Font(self.window, size=24, weight='bold', family='Consolas')
         self.fontstyle2 = font.Font(self.window, size=16, weight='bold', family='Consolas')
+        self.fontstyle3 = font.Font(self.window, size=16, weight='bold', family='Consolas')
         self.setupButton()
         self.setupLabel()
         self.player = [Player("player"), Player("player2"), Player("player3")]
@@ -65,28 +67,28 @@ class Dorijitgo:
         # self.test["bg"] = "white"
 
     def setupLabel(self):
-        self.LbetMoney = [Label(text="0만", width=6, height=1, font=self.fontstyle, bg="green", fg="orange"),
-                          Label(text="0만", width=6, height=1, font=self.fontstyle, bg="green", fg="orange"),
-                          Label(text="0만", width=6, height=1, font=self.fontstyle, bg="green", fg="orange")]
+        self.LbetMoney = [Label(text="0만", width=6, height=1, font=self.fontstyle, bg="green", fg="cyan"),
+                          Label(text="0만", width=6, height=1, font=self.fontstyle, bg="green", fg="cyan"),
+                          Label(text="0만", width=6, height=1, font=self.fontstyle, bg="green", fg="cyan")]
 
-        self.LplayerRank = [Label(text="", width=10, height=1, font=self.fontstyle2, bg="green", fg="cyan"),
-                            Label(text="", width=10, height=1, font=self.fontstyle2, bg="green", fg="cyan"),
-                            Label(text="", width=10, height=1, font=self.fontstyle2, bg="green", fg="cyan")]
+        self.LplayerRank = [Label(text="", width=20, height=1, font=self.fontstyle3, bg="green", fg="cyan"),
+                            Label(text="", width=20, height=1, font=self.fontstyle3, bg="green", fg="cyan"),
+                            Label(text="", width=20, height=1, font=self.fontstyle3, bg="green", fg="cyan")]
         self.Lstatus = [Label(text="", width=5, height=1, font=self.fontstyle, bg="green", fg="red"),
                         Label(text="", width=5, height=1, font=self.fontstyle, bg="green", fg="red"),
                         Label(text="", width=5, height=1, font=self.fontstyle, bg="green", fg="red")]
 
         for i in range(3):
             self.LbetMoney[i].place(x=60 + (i * 200), y=500)
-            self.LplayerRank[i].place(x=80 + (i * 230), y=290)
+            self.LplayerRank[i].place(x=30 + (i * 230), y=290)
             self.Lstatus[i].place(x=60 + (i * 230), y=250)
 
         self.LplayerMoney = Label(text="1000만", width=15, height=1, font=self.fontstyle, bg="green",
                                   fg="blue")
         self.LplayerMoney.place(x=560, y=500)
 
-        self.LdealerRank = Label(text="", width=10, height=1, font=self.fontstyle2, bg="green", fg="cyan")
-        self.LdealerRank.place(x=330, y=40)
+        self.LdealerRank = Label(text="", width=20, height=1, font=self.fontstyle3, bg="green", fg="cyan")
+        self.LdealerRank.place(x=280, y=40)
 
     def pressedWon5(self, i):
         self.betMoney[i] += 5
@@ -116,8 +118,8 @@ class Dorijitgo:
         if self.round == 0:
             for i in range(3):
                 self.player[i].reset()
-            self.dealer.reset()  # 카드 덱 48장 셔플링 0,1,,.51
-            self.cardDeck = [i for i in range(48)]
+            self.dealer.reset()  # 카드 덱 40장 셔플링 0,1,,.51
+            self.cardDeck = [i for i in range(40)]
             random.shuffle(self.cardDeck)
             self.deckN = 0
             for i in range(3):
@@ -134,6 +136,8 @@ class Dorijitgo:
             for j in range(3):
                 self.hitPlayer(j, 4)
             self.hitDealerDown(4)
+            self.round += 1
+        elif self.round == 3:
             self.checkWinner()
         else:
             self.round += 1
@@ -214,6 +218,220 @@ class Dorijitgo:
         self.Again['bg'] = 'gray'
         PlaySound('sounds/ding.wav', SND_FILENAME | SND_ASYNC | SND_ALIAS)
 
+    def madeTwo(self, two):
+        two.sort()
+        print(two)
+        # ex) two = [[2,1], [3,2]]  앞은 숫자 뒤는 모양
+        if two == [[3, 1], [8, 1]]:  # 38광땡
+            return [100, "38광땡"]
+        elif two == [[1, 1], [3, 1]]:  # 13광땡
+            return [99, "13광땡"]
+        elif two == [[1, 1], [8, 1]]:  # 18광땡
+            return [98, "18광땡"]
+        elif two[0][0] == two[1][0]:  # 땡
+            return [two[0][0] + 70, str(two[0][0]) + "땡"]
+        elif (two[0][0] + two[1][0]) % 10:  # 끗
+            return [((two[0][0] + two[1][0]) % 10) + 10, str((two[0][0] + two[1][0]) % 10) + "끗"]
+        elif two[0][0] + two[1][0] == 10:  # 망통
+            return [two[1][0], "망통"]
+        else:
+            return [0, "뭐임"]
+
+    def madeThree(self):
+        made1 = ((1, 2, 7), (1, 3, 6), (1, 4, 5), (1, 9, 10),
+                 (2, 3, 5), (2, 8, 10),
+                 (3, 7, 10), (3, 8, 9),
+                 (4, 6, 10), (4, 7, 9),
+                 (5, 6, 9), (5, 7, 8))
+
+        made2 = ((1, 1, 8),
+                 (2, 2, 6),
+                 (3, 3, 4),
+                 (4, 4, 2),
+                 (5, 5, 10),
+                 (6, 6, 8),
+                 (7, 7, 6),
+                 (8, 8, 4),
+                 (9, 9, 2))
+        threeDict = {(1, 1, 8): "콩콩팔", (1, 2, 7): "삐리칠", (1, 3, 6): "물삼육", (1, 4, 5): "빽새오", (1, 9, 10): "삥구장",
+                     (2, 2, 6): "니니육", (2, 3, 5): "이삼오", (2, 8, 10): "이판장", (3, 3, 4): "심심새", (3, 7, 10): "삼칠장",
+                     (3, 8, 9): "삼빡구", (4, 4, 2): "살살이", (4, 6, 10): "사륙장", (4, 7, 9): "사칠구", (5, 5, 10): "꼬꼬장",
+                     (5, 6, 9): "오륙구", (5, 7, 8): "오리발", (6, 6, 8): "쭉쭉팔", (7, 7, 6): "철철육", (8, 8, 4): "팍팍싸",
+                     (9, 9, 2): "구구리"}
+        # 플레이어 판단
+        for i in range(len(self.player)):
+            rdyNum = [i for i in range(5)]
+            # 겹치는 친구가 없다면 5 == 5 made1
+            if len(set(self.player[i].getCardsValue())) == 5:
+                for j in range(len(made1)):
+
+                    if all(card in self.player[i].getCardsValue() for card in made1[j]):
+                        print(i, "번째 플레이어 있다1", made1[j])
+                        insex = []
+                        twoCards = []
+                        for n in made1[j]:
+                            insex.append(self.player[i].getCardsValue().index(n))
+                        for tq in [num for num in rdyNum if num not in insex]:
+                            twoCards.append(self.player[i].getCards()[tq])
+                        result = self.madeTwo(twoCards)
+                        self.player[i].winningPoint = result[0]
+                        print("결과", result)
+                        for n in insex:
+                            self.LcardsPlayer[i][n].place(x=50 + (i * 230) + n * 35, y=370)
+                            self.LcardsLabelPlayer[i][n].configure(fg="orange")
+
+                        self.LplayerRank[i].configure(text=threeDict[made1[j]] + " " + result[1])
+                        break
+                    elif j == len(made1) - 1:
+                        print(i, "번째 플레이어 노메이드1")
+                        self.LplayerRank[i].configure(text="노메이드")
+            # 겹치는 친구 1개 있다면 4 == 4 made2
+            else:
+                multiKey = 0
+                c = dict()
+                for z in self.player[i].getCardsValue():
+                    try:
+                        c[z] += 1
+                    except:
+                        c[z] = 0
+                for key, value in c.items():
+                    if value != 0:
+                        multiKey = key
+
+                if multiKey <= 9 and all(card in self.player[i].getCardsValue() for card in made2[multiKey - 1]):
+                    print(i, "번째 플레이어 있다2", made2[multiKey - 1])
+                    insex = []
+                    twoCards = []
+                    for n in made2[multiKey - 1]:
+                        insex.append(self.player[i].getCardsValue().index(n))
+
+                    for n in insex:
+                        self.LcardsPlayer[i][n].place(x=50 + (i * 230) + n * 35, y=370)
+                        self.LcardsLabelPlayer[i][n].configure(fg="orange")
+                    Sarr = self.player[i].getCardsValue()
+                    Sarr.remove(multiKey)
+                    sexy = Sarr.index(multiKey)
+                    self.LcardsPlayer[i][sexy + 1].place(x=50 + (i * 230) + (sexy + 1) * 35, y=370)
+                    self.LcardsLabelPlayer[i][sexy + 1].configure(fg="orange")
+
+                    insex2 = list(set(insex))
+                    insex2.append(sexy + 1)
+
+                    for tq in [num for num in rdyNum if num not in insex2]:
+                        twoCards.append(self.player[i].getCards()[tq])
+                    result = self.madeTwo(twoCards)
+                    self.player[i].winningPoint = result[0]
+                    print("결과2", result)
+                    self.LplayerRank[i].configure(text=threeDict[made1[multiKey - 1]] + " " + result[1])
+
+                else:
+                    # 중복됬는데도 없는애들, 중복된애들이 10 이상인놈들
+                    for j in range(len(made1)):
+                        if all(card in set(self.player[i].getCardsValue()) for card in made1[j]):
+                            print(i, "번째 플레이어 있다3", made1[j])
+                            insex = []
+                            twoCards = []
+                            for n in made1[j]:
+                                insex.append(self.player[i].getCardsValue().index(n))
+                            for tq in [num for num in rdyNum if num not in insex]:
+                                twoCards.append(self.player[i].getCards()[tq])
+                            result = self.madeTwo(twoCards)
+                            self.player[i].winningPoint = result[0]
+                            print("결과3", result)
+                            for n in insex:
+                                self.LcardsPlayer[i][n].place(x=50 + (i * 230) + n * 35, y=370)
+                                self.LcardsLabelPlayer[i][n].configure(fg="orange")
+                            self.LplayerRank[i].configure(text=threeDict[made1[j]] + " " + result[1])
+                            break
+                        elif j == len(made1) - 1:
+                            print(i, "번째 플레이어 노메이드2")
+                            self.LplayerRank[i].configure(text="노메이드")
+
+        # 딜러 판단
+        rdyNum = [i for i in range(5)]
+        if len(set(self.dealer.getCardsValue())) == 5:
+            for j in range(len(made1)):
+                if all(card in self.dealer.getCardsValue() for card in made1[j]):
+                    print("딜러 있다1", made1[j])
+                    insex = []
+                    twoCards = []
+                    for n in made1[j]:
+                        insex.append(self.dealer.getCardsValue().index(n))
+                    for tq in [num for num in rdyNum if num not in insex]:
+                        twoCards.append(self.dealer.getCards()[tq])
+                    result = self.madeTwo(twoCards)
+                    self.dealer.winningPoint = result[0]
+                    print("딜러 결과1", result)
+                    for n in insex:
+                        self.LcardsDealer[n].place(x=300 + n * 35, y=120)
+                        self.LcardsLabelDealer[n].configure(fg="orange")
+                    self.LdealerRank.configure(text=threeDict[made1[j]] + " " + result[1])
+                    break
+                elif j == len(made1) - 1:
+                    print("딜러 노메이드1")
+                    self.LdealerRank.configure(text="노메이드")
+        # 겹치는 친구 1개 있다면 4 == 4 made2
+        else:
+            multiKey = 0
+            c = dict()
+            for z in self.dealer.getCardsValue():
+                try:
+                    c[z] += 1
+                except:
+                    c[z] = 0
+            for key, value in c.items():
+                if value != 0:
+                    multiKey = key
+
+            if multiKey <= 9 and all(card in self.dealer.getCardsValue() for card in made2[multiKey - 1]):
+                print("딜러 있다2", made2[multiKey - 1])
+                insex = []
+                twoCards = []
+                for n in made2[multiKey - 1]:
+                    insex.append(self.dealer.getCardsValue().index(n))
+
+                for n in insex:
+                    self.LcardsDealer[n].place(x=300 + n * 35, y=120)
+                    self.LcardsLabelDealer[n].configure(fg="orange")
+                Sarr = self.dealer.getCardsValue()
+                Sarr.remove(multiKey)
+                sexy = Sarr.index(multiKey)
+                self.LcardsDealer[sexy + 1].place(x=300 + (sexy + 1) * 35, y=120)
+                self.LcardsLabelDealer[sexy + 1].configure(fg="orange")
+
+                insex2 = list(set(insex))
+                insex2.append(sexy + 1)
+
+                for tq in [num for num in rdyNum if num not in insex2]:
+                    twoCards.append(self.dealer.getCards()[tq])
+                result = self.madeTwo(twoCards)
+                self.dealer.winningPoint = result[0]
+                print("딜러 결과2", result)
+                self.LdealerRank.configure(text=threeDict[made1[multiKey - 1]] + " " + result[1])
+
+            else:
+                # 중복됬는데도 없는애들, 중복된애들이 10 이상인놈들
+                for j in range(len(made1)):
+                    if all(card in set(self.dealer.getCardsValue()) for card in made1[j]):
+                        print("딜러 있다3", made1[j])
+                        insex = []
+                        twoCards = []
+                        for n in made1[j]:
+                            insex.append(self.dealer.getCardsValue().index(n))
+                        for tq in [num for num in rdyNum if num not in insex]:
+                            twoCards.append(self.dealer.getCards()[tq])
+                        result = self.madeTwo(twoCards)
+                        self.dealer.winningPoint = result[0]
+                        print("딜러 결과3", result)
+                        for n in insex:
+                            self.LcardsDealer[n].place(x=300 + n * 35, y=120)
+                            self.LcardsLabelDealer[n].configure(fg="orange")
+                        self.LdealerRank.configure(text=threeDict[made1[j]] + " " + result[1])
+                        break
+                    elif j == len(made1) - 1:
+                        print("딜러 노메이드1")
+                        self.LdealerRank.configure(text="노메이드")
+
     def checkWinner(self):
         # 뒤집힌 카드를 다시 그린다.
         for i in range(5):
@@ -222,14 +440,21 @@ class Dorijitgo:
             self.LcardsDealer[i].image = p  # 파이썬은 라벨 이미지 레퍼런스를 갖고 있어야 이미지가 보임
             self.LcardsLabelDealer[i].place(x=320 + i * 35, y=70)
         for i in range(3):
-            self.LplayerRank[i].configure(text="플레이어 족보")
-        self.LdealerRank.configure(text="플레이어 족보")
+            self.LplayerRank[i].configure(text="테스트중임다")
+        self.LdealerRank.configure(text="테스트중임다")
 
         # 승리판단
+        self.madeThree()
+
         for i in range(3):
-            self.Lstatus[i].configure(text="승")
-            self.playerMoney += self.betMoney[i] * 2
-        PlaySound('sounds/win.wav', SND_FILENAME | SND_ASYNC | SND_ALIAS)
+            if self.dealer.winningPoint < self.player[i].winningPoint:
+                self.Lstatus[i].configure(text="승")
+                self.playerMoney += self.betMoney[i] * 2
+                PlaySound('sounds/win.wav', SND_FILENAME | SND_ASYNC | SND_ALIAS)
+            else:
+                self.Lstatus[i].configure(text="패")
+                PlaySound('sounds/wrong.wav', SND_FILENAME | SND_ASYNC | SND_ALIAS)
+
         # PlaySound('sounds/wrong.wav', SND_FILENAME)
 
         for i in range(3):

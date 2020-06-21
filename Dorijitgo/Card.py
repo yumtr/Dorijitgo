@@ -1,13 +1,13 @@
 class Card:
-    def __init__(self, temp):  # 렌덤 넘버0..51 값을 입력받아서 카드 객체 생성
-        self.value = temp % 12 + 1  # 1..13
-        self.x = temp // 12  # 0..3 카드 무늬suit 결정
+    def __init__(self, temp):  # 렌덤 넘버0..40 값을 입력받아서 카드 객체 생성
+        self.value = temp % 10 + 1  # 1..13
+        self.x = temp // 10  # 0..3 카드 무늬suit 결정
 
-    def getValue(self):  # 카드 값 JQK는 10으로 결정
-        if self.value > 10:
-            return 10
-        else:
+    def getValue(self):
             return self.value
+
+    def getShape(self):
+        return self.x
 
     def getsuit(self):  # 카드 무늬 결정
         if self.x == 0:
@@ -26,6 +26,6 @@ class Card:
 
 if __name__ == "__main__":
     cardDeck = [i for i in range(48)]
-    for i in range(48):
+    for i in range(40):
         hi = Card(cardDeck[i])
         print(hi.filename())

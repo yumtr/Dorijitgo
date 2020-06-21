@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="400c7e04-6eca-4f98-a982-e8f5935e3ae2" name="Default Changelist" comment="" />
+    <list default="true" id="400c7e04-6eca-4f98-a982-e8f5935e3ae2" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dorijitgo/Card.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dorijitgo/Card.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dorijitgo/Dorijitgo.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dorijitgo/Dorijitgo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dorijitgo/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dorijitgo/Player.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dorijitgo/configuration.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dorijitgo/configuration.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,7 +27,7 @@
   <component name="ProjectId" id="1cOEmydep755R0n3JIvgqrwKQKy" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Blackjack" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">

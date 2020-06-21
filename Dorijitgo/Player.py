@@ -3,6 +3,7 @@ class Player:
         self.name = name
         self.cards = []
         self.N = 0
+        self.winningPoint = 0
 
     def inHand(self):
         return self.N
@@ -14,18 +15,23 @@ class Player:
     def reset(self):
         self.N = 0
         self.cards.clear()
+        self.winningPoint = 0
 
-    # ace는 1혹은 11로 모두 사용 가능
-    # 일단 11로 계산한 후 21이 넘어가면 1로 정정
-    def value(self):
-        total = 0
-        ace = 0
+    def getCards(self):
+        cards = [[0, 0] for i in range(self.N)]
         for i in range(self.N):
-            total += self.cards[i].getValue()
-            if self.cards[i].getValue() == 1:
-                total += 10
-                ace += 1
-        while total > 21 and ace != 0:
-            total -= 10
-            ace -= 1
-        return total
+            cards[i][0] = self.cards[i].getValue()
+            cards[i][1] = self.cards[i].getShape()
+        return cards
+
+    def getCardsValue(self):
+        cards = [[0] for i in range(self.N)]
+        for i in range(self.N):
+            cards[i] = self.cards[i].getValue()
+        return cards
+
+    def getCardsShape(self):
+        cards = [[0] for i in range(self.N)]
+        for i in range(self.N):
+            cards[i] = self.cards[i].getShape()
+        return cards

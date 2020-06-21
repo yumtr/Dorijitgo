@@ -103,3 +103,4 @@ class Configuration:
     def sumDie(d):
         dice = [d[i].getRoll() for i in range(5)]
         return sum(dice)
+
