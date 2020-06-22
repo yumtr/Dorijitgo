@@ -451,11 +451,13 @@ class Dorijitgo:
                 self.Lstatus[i].configure(text="승")
                 self.playerMoney += self.betMoney[i] * 2
                 PlaySound('sounds/win.wav', SND_FILENAME | SND_ASYNC | SND_ALIAS)
+            elif self.dealer.winningPoint == self.player[i].winningPoint:
+                self.Lstatus[i].configure(text="비김")
+                self.playerMoney += self.betMoney[i]
             else:
                 self.Lstatus[i].configure(text="패")
                 PlaySound('sounds/wrong.wav', SND_FILENAME | SND_ASYNC | SND_ALIAS)
 
-        # PlaySound('sounds/wrong.wav', SND_FILENAME)
 
         for i in range(3):
             self.Won5[i]['state'] = 'disabled'
